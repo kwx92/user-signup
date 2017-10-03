@@ -18,6 +18,7 @@ def is_user(username):
     elif len(username) < 3 or len(username) > 20:
         return False
     else:
+        username = request.form['username']
         return True
 def is_password(password, v_password):
     if ' ' in password:
@@ -46,15 +47,21 @@ def login():
     p_error = ''
     user_error = ''
     email_error = ''
+    login = False
     if not is_user(username):
         user_error = 'Please make sure username is 3-20 characters, and does not contain spaces'
+        login = False
     if not is_password(password, v_password):
         p_error = 'Please make sure passwords match, are 3-20 characters, and do not contain spaces'
+        login = False
     if not is_email(email):
         email_error = 'Please be sure email is formatted properly with @ and . characters'
-    return render_template('homepage.html', user_error=user_error, p_error=p_error, email_error=email_error)
-
+        login = False
     if not user_error and not p_error and not email_error:
-        return render_template('is_valid.html', username=username)
-
+        login = True
+    if not login:
+        return render_template('homepage.html', user_error=user_error, username=username, p_error=p_error, email_error=email_error, email=email)
+    else:
+        return '<p>Hello {0}, your login was successful!</p>'.format(username)
+    
 app.run()
